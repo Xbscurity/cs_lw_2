@@ -1,0 +1,127 @@
+using System;
+
+abstract class Function
+{
+    public abstract double Calculate(double x);
+    public virtual void PrintResult(double x, double y)
+    {
+        if (double.IsNaN(y))
+        {
+            Console.WriteLine($"f({x}) is not defined");
+        }
+        else
+        {
+            Console.WriteLine($"f({x}) = {y}");
+        }
+    }
+}
+
+class Ellipse : Function
+{
+    private double a, b;
+
+    public Ellipse(double a, double b)
+    {
+        this.a = a;
+        this.b = b;
+    }
+
+    public override double Calculate(double x)
+    {
+        return b * Math.Sqrt(1 - x * x / (a * a));
+    }
+
+    public double CalculateArea()
+    {
+        return Math.PI * a * b;
+    }
+}
+
+class Hyperbola : Function
+{
+    private double a, b;
+
+    public Hyperbola(double a, double b)
+    {
+        this.a = a;
+        this.b = b;
+    }
+
+    public override double Calculate(double x)
+    {
+        return b * Math.Sqrt(x * x / (a * a) - 1);
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Function f = null;
+
+        while (true)
+        {
+            Console.WriteLine("Select a function to calculate:");
+            Console.WriteLine("1. Ellipse");
+            Console.WriteLine("2. Hyperbola");
+            Console.WriteLine("3. Exit");
+
+            int choice;
+            while (!int.TryParse(Console.ReadLine(), out choice) || choice < 1 || choice > 3)
+            {
+                Console.WriteLine("Invalid choice. Please try again.");
+            }
+
+            if (choice == 3)
+            {
+                break;
+            }
+
+            double a, b;
+            while (true)
+            {
+                Console.Write("Enter a: ");
+                if (!double.TryParse(Console.ReadLine(), out a) || a <= 0)
+                {
+                    Console.WriteLine("Invalid value for a. Please try again.");
+                    continue;
+                }
+
+                Console.Write("Enter b: ");
+                if (!double.TryParse(Console.ReadLine(), out b) || b <= 0)
+                {
+                    Console.WriteLine("Invalid value for b. Please try again.");
+                    continue;
+                }
+
+                break;
+            }
+
+            if (choice == 1)
+            {
+                f = new Ellipse(a, b);
+            }
+            else
+            {
+                f = new Hyperbola(a, b);
+            }
+
+            Console.Write("Enter x: ");
+            double x;
+            while (!double.TryParse(Console.ReadLine(), out x))
+            {
+                Console.WriteLine("Invalid value for x. Please try again.");
+                Console.Write("Enter x: ");
+            }
+
+            double y = f.Calculate(x);
+            f.PrintResult(x, y);
+
+            if (f is Ellipse e)
+            {
+                double area = e.CalculateArea();
+                Console.WriteLine($"The area of the ellipse is {area}");
+            }
+        }
+    }
+}
